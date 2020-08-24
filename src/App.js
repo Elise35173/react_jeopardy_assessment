@@ -23,10 +23,24 @@ function App() {
           path="/welcome/:name"
           render={(props) => <Welcome {...props} name={props.match.params.name} />}
         />
-        <Route exact path="/clock" component= {Clock} />
-        <Route exact path="/contact" component= {Contact} />
-        <Route exact path="jeopardy" component= {Jeopardy} />
-        <Route component={Page404} />
+        <Route 
+          exact 
+          path="/clock" 
+          component= {Clock} 
+        />
+        <Route 
+          exact 
+          path="/contact" 
+          component= {Contact} 
+        />
+        <Route 
+          exact 
+          path="/jeopardy" 
+          component= {Jeopardy} 
+        />
+        <Route 
+          component={Page404} 
+        />
       </Switch>
     </div>
   );

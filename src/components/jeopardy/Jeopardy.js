@@ -1,17 +1,37 @@
 import React, { Component } from 'react';
-//import our service
-import JeopardyService from "../../services/JeopardyService";
+
+import JeopardyService from "../../services/jeopardyService";
+
 class Jeopardy extends Component {
-  //set our initial state and set up our service as this.client on this component
   constructor(props){
     super(props);
+
     this.client = new JeopardyService();
     this.state = {
-      data: {},
+      formData: {userAnswer: ""},
+      data: {
+        "id": null,
+        "answer": "",
+        "question": "",
+        "value": null,
+        "airdate": "",
+        "created_at": "",
+        "updated_at": "",
+        "category_id": null,
+        "game_id": null,
+        "invalid_count": null,
+        "category": {
+          "id": null,
+          "title": "",
+          "created_at": "",
+          "updated_at": "",
+          "clues_count": null,
+        }
+      },
       score: 0
     }
   }
-  //get a new random question from the API and add it to the data object in state
+  
   getNewQuestion() {
     return this.client.getQuestion().then(result => {
       this.setState({
@@ -19,17 +39,70 @@ class Jeopardy extends Component {
       })
     })
   }
-  //when the component mounts, get a the first question
+  
   componentDidMount() {
     this.getNewQuestion();
   }
-  //display the results on the screen
+
+  handleChange = (event) => {
+    const formData = {...this.state.formData};
+    formData[event.target.name] = event.target.value;
+
+    this.setState({ formData })
+  }
+  handleSubmit = (event) => {
+    event.preventDefault();
+    let value = Number(this.state.data.value)
+    if (this.state.formData.userAnswer === this.state.data.answer) {
+      this.setState((state) => ({
+        score: state.score + value
+      }))
+    }
+    else {
+      this.setState((state) => ({
+        score: state.score - value
+      }))
+    }
+    this.resetForm()
+    this.getNewQuestion()
+  }
+
+  resetForm = (event) => {
+      this.setState({
+          formData: {userAnswer: ""}
+      })
+  }
+
   render() {
     return (
       <div>
-        {JSON.stringify(this.state.data)}
+        <strong>User's Score: {this.state.score}</strong>
+        <br />
+        <strong>Question: {this.state.data.question}</strong>
+        <br />
+        <strong>Value: {this.state.data.value}</strong>
+        <br />
+        <strong>Category: {this.state.data.category.title}</strong>
+        <br />
+        <strong>Answer: {this.state.data.answer}</strong>
+        <br />
+        <form className="SubmitAnswer" onSubmit={this.handleSubmit}>
+          <div>
+            <label 
+              htmlFor="userAnswer">Your Answer:
+            </label>
+            <input 
+              type="text" 
+              name="userAnswer"
+              value={this.state.formData.userAnswer}
+              onChange={this.handleChange}
+            />
+          </div>
+          <button>Submit Answer!</button>
+        </form>
       </div>
     );
   }
 }
+
 export default Jeopardy;
